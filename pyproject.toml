@@ -4,4 +4,10 @@ version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "ffmpeg==1.4",
+    "openai>=1.70.0",
+    "pydub>=0.25.1",
+    "python-dotenv>=1.1.0",
+    "streamlit>=1.44.0",
+]
