@@ -62,7 +62,7 @@ if st.button("🎧 音声を生成"):
                 input=text_input
             )
             # OpenAIのレスポンスを保存
-            with open("output.mp3", "wb") as f:
+            with open(final_output_filename, "wb") as f:
                 f.write(response.content)
 
             # スピード調整ありなら変更
