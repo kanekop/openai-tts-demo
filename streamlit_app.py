@@ -5,6 +5,10 @@ import openai
 import os
 from pydub import AudioSegment
 
+from datetime import datetime
+import pandas as pd
+
+
 # ReplitのSecrets機能で登録したAPIキーを使用
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
