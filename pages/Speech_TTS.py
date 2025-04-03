@@ -123,17 +123,30 @@ if st.button("🎧 音声を生成"):
             import zipfile
             import io
 
-            # Create zip file in memory
+            # Create text files and prepare zip file in memory
             zip_buffer = io.BytesIO()
             with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+                # Add MP3 files
                 for output_path in output_files:
                     zip_file.write(output_path, os.path.basename(output_path))
+                
+                # Create and add text files
+                lines = [line.strip() for line in text_input.split('\n') if line.strip()]
+                for i, line in enumerate(lines, 1):
+                    text_filename = f"script_{str(i).zfill(3)}.txt"
+                    # Create text file
+                    with open(text_filename, "w", encoding="utf-8") as f:
+                        f.write(line)
+                    # Add to zip
+                    zip_file.write(text_filename, text_filename)
+                    # Clean up text file
+                    os.remove(text_filename)
             
             # Download button for zip file
             st.download_button(
-                "⬇ すべてのMP3をZIPでダウンロード",
+                "⬇ すべてのMP3とスクリプトをZIPでダウンロード",
                 zip_buffer.getvalue(),
-                file_name=f"{file_name}_all_mp3.zip",
+                file_name=f"{file_name}_all_files.zip",
                 mime="application/zip"
             )
         else:
