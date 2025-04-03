@@ -143,20 +143,27 @@ if st.button("🎧 音声を生成"):
                     os.remove(text_filename)
             
             # Download button for zip file
-            st.download_button(
+            if st.download_button(
                 "⬇ すべてのMP3とスクリプトをZIPでダウンロード",
                 zip_buffer.getvalue(),
                 file_name=f"{file_name}_all_files.zip",
                 mime="application/zip"
-            )
+            ):
+                # Cleanup MP3 files after download
+                for output_path in output_files:
+                    if os.path.exists(output_path):
+                        os.remove(output_path)
         else:
             # Single file download for single MP3 mode
             with open(output_files[0], "rb") as f:
-                st.download_button(
+                if st.download_button(
                     "⬇ MP3をダウンロード",
                     f,
                     file_name=os.path.basename(output_files[0])
-                )
+                ):
+                    # Cleanup single MP3 file after download
+                    if os.path.exists(output_files[0]):
+                        os.remove(output_files[0])
 
 
         # 使用量ログに記録

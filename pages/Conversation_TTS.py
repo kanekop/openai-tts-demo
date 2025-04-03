@@ -79,4 +79,7 @@ if st.button("⬆️ MP3を作成"):
                 with open(output_file, "rb") as f:
                     st.audio(f.read(), format="audio/mp3")
                 with open(output_file, "rb") as f:
-                    st.download_button("⬇️ MP3ダウンロード", f, file_name=output_file)
+                    if st.download_button("⬇️ MP3ダウンロード", f, file_name=output_file):
+                        # Cleanup MP3 file after download
+                        if os.path.exists(output_file):
+                            os.remove(output_file)
