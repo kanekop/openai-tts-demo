@@ -1,0 +1,6 @@
+datetime,filename,model,chars,estimated_cost($)
+2025-04-01 08:34:59,socks-saga.mp3,tts-1-hd,1523,0.0457
+2025-04-01 08:50:23,SockItToMe.mp3,tts-1,1574,0.0236
+2025-04-01 08:51:46,SockItToMe-hd.mp3,tts-1-hd,1574,0.0472
+2025-04-02 17:49:14,output.mp3,tts-1,11,0.0002
+2025-04-02 18:02:00,output.mp3,tts-1,11,0.0002
