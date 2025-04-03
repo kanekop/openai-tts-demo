@@ -38,6 +38,17 @@ speed = st.sidebar.slider("再生スピード（1.0 = 通常）", 0.5, 2.0, 1.0,
 
 st.title("🎤 Text-to-Speech (TTS) ツール")
 
+# MP3ファイルのクリーンアップボタン
+if st.sidebar.button("🗑️ すべてのMP3ファイルを削除"):
+    import glob
+    mp3_files = glob.glob("*.mp3")
+    for mp3_file in mp3_files:
+        try:
+            os.remove(mp3_file)
+            st.sidebar.success(f"削除完了: {len(mp3_files)}個のMP3ファイル")
+        except Exception as e:
+            st.sidebar.error(f"エラー: {str(e)}")
+
 # サイドバーに追加する場合（おすすめ）
 file_name = st.sidebar.text_input("保存するファイル名（拡張子なし）", value="output")
 # ファイル名の最終形（.mp3をつける）
