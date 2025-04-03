@@ -113,13 +113,36 @@ if st.button("🎧 音声を生成"):
 
         st.success("✅ MP3ファイルを作成しました！")
 
+        # Play each audio file
         for output_path in output_files:
             with open(output_path, "rb") as f:
                 st.audio(f.read(), format="audio/mp3")
+
+        # For multiple MP3 mode, create a zip file
+        if mode == "複数MP3（1行ごと）" and len(output_files) > 1:
+            import zipfile
+            import io
+
+            # Create zip file in memory
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, "w", zipfile.ZIP_DEFLATED) as zip_file:
+                for output_path in output_files:
+                    zip_file.write(output_path, os.path.basename(output_path))
+            
+            # Download button for zip file
+            st.download_button(
+                "⬇ すべてのMP3をZIPでダウンロード",
+                zip_buffer.getvalue(),
+                file_name=f"{file_name}_all_mp3.zip",
+                mime="application/zip"
+            )
+        else:
+            # Single file download for single MP3 mode
+            with open(output_files[0], "rb") as f:
                 st.download_button(
-                    f"⬇ {os.path.basename(output_path)} をダウンロード",
+                    "⬇ MP3をダウンロード",
                     f,
-                    file_name=os.path.basename(output_path)
+                    file_name=os.path.basename(output_files[0])
                 )
 
 
