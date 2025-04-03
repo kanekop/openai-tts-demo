@@ -44,6 +44,9 @@ file_name = st.sidebar.text_input("保存するファイル名（拡張子なし
 final_output_filename = f"{file_name}.mp3"
 adjusted_output_filename = f"{file_name}_adjusted.mp3"
 
+# モード選択
+mode = st.radio("生成モード", ["単一MP3", "複数MP3（1行ごと）"])
+
 # テキスト入力 or ファイルアップロード
 uploaded_file = st.file_uploader("📄 テキストファイルをアップロード（.txt）", type="txt")
 
@@ -58,35 +61,66 @@ if st.button("🎧 音声を生成"):
     if not text_input.strip():
         st.warning("テキストを入力してください。")
     else:
-        with st.spinner("音声を生成中..."):
-            # OpenAI TTS API 呼び出し
-            response = openai.audio.speech.create(
-                model=model,  # ✅ ここで動的に選ばれたモデルを使用
-                voice=selected_voice,
-                input=text_input
-            )
-            # OpenAIのレスポンスを保存
-            with open(final_output_filename, "wb") as f:
-                f.write(response.content)
+        if mode == "単一MP3":
+            with st.spinner("音声を生成中..."):
+                response = openai.audio.speech.create(
+                    model=model,
+                    voice=selected_voice,
+                    input=text_input
+                )
+                with open(final_output_filename, "wb") as f:
+                    f.write(response.content)
 
-            # スピード調整ありなら変更
-            if speed != 1.0:
-                change_audio_speed(final_output_filename, adjusted_output_filename, speed)
-                output_path = adjusted_output_filename
-            else:
-                output_path = final_output_filename
+                if speed != 1.0:
+                    change_audio_speed(final_output_filename, adjusted_output_filename, speed)
+                    output_path = adjusted_output_filename
+                else:
+                    output_path = final_output_filename
+                
+                output_files = [output_path]
+        else:  # 複数MP3モード
+            lines = [line.strip() for line in text_input.split('\n') if line.strip()]
+            output_files = []
+            
+            progress_bar = st.progress(0)
+            for i, line in enumerate(lines):
+                progress_text = st.empty()
+                progress_text.text(f"生成中... ({i+1}/{len(lines)})")
+                
+                serial = str(i + 1).zfill(3)
+                current_filename = f"{file_name}_{serial}.mp3"
+                current_adjusted_filename = f"{file_name}_{serial}_adjusted.mp3"
+                
+                response = openai.audio.speech.create(
+                    model=model,
+                    voice=selected_voice,
+                    input=line
+                )
+                with open(current_filename, "wb") as f:
+                    f.write(response.content)
+                
+                if speed != 1.0:
+                    change_audio_speed(current_filename, current_adjusted_filename, speed)
+                    output_files.append(current_adjusted_filename)
+                else:
+                    output_files.append(current_filename)
+                    
+                progress_bar.progress((i + 1) / len(lines))
+            
+            progress_bar.empty()
+            progress_text.empty()
 
 
         st.success("✅ MP3ファイルを作成しました！")
 
-        # 再生
-        with open(output_path, "rb") as f:
-            audio_bytes = f.read()
-            st.audio(audio_bytes, format="audio/mp3")
-
-        # ダウンロードボタン
-        with open(output_path, "rb") as f:
-            st.download_button("⬇ MP3をダウンロード", f, file_name=output_path)
+        for output_path in output_files:
+            with open(output_path, "rb") as f:
+                st.audio(f.read(), format="audio/mp3")
+                st.download_button(
+                    f"⬇ {os.path.basename(output_path)} をダウンロード",
+                    f,
+                    file_name=os.path.basename(output_path)
+                )
 
 
         # 使用量ログに記録
