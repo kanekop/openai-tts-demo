@@ -63,44 +63,21 @@ if st.button("🎧 音声を生成"):
     else:
         if mode == "単一MP3":
             with st.spinner("音声を生成中..."):
-                # Generate audio in memory
                 response = openai.audio.speech.create(
                     model=model,
                     voice=selected_voice,
                     input=text_input
                 )
-                audio_content = response.content
+                with open(final_output_filename, "wb") as f:
+                    f.write(response.content)
 
                 if speed != 1.0:
-                    # Create temporary BytesIO object for speed adjustment
-                    temp_buffer = io.BytesIO()
-                    temp_buffer.write(audio_content)
-                    temp_buffer.seek(0)
-                    
-                    # Adjust speed in memory
-                    audio = AudioSegment.from_file(temp_buffer, format="mp3")
-                    adjusted_audio = audio._spawn(audio.raw_data, overrides={
-                        "frame_rate": int(audio.frame_rate * speed)
-                    }).set_frame_rate(audio.frame_rate)
-                    
-                    # Get adjusted audio content
-                    output_buffer = io.BytesIO()
-                    adjusted_audio.export(output_buffer, format="mp3")
-                    audio_content = output_buffer.getvalue()
+                    change_audio_speed(final_output_filename, adjusted_output_filename, speed)
+                    output_path = adjusted_output_filename
+                else:
+                    output_path = final_output_filename
                 
-                # Store final content for playback and download
-                st.session_state[f"{file_name}_audio"] = audio_content
-                
-                # Play audio
-                st.audio(audio_content, format="audio/mp3")
-                
-                # Download button
-                st.download_button(
-                    "⬇ MP3をダウンロード",
-                    audio_content,
-                    file_name=f"{file_name}.mp3",
-                    mime="audio/mp3"
-                )
+                output_files = [output_path]
         else:  # 複数MP3モード
             lines = [line.strip() for line in text_input.split('\n') if line.strip()]
             output_files = []
