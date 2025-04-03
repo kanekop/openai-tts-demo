@@ -5,3 +5,5 @@ datetime,filename,model,chars,estimated_cost($)
 2025-04-02 17:49:14,output.mp3,tts-1,11,0.0002
 2025-04-02 18:02:00,output.mp3,tts-1,11,0.0002
 2025-04-03 00:17:02,output_008.mp3,tts-1,1393,0.0209
+2025-04-03 00:23:43,output.mp3,tts-1,1393,0.0209
+2025-04-03 00:26:25,output_008.mp3,tts-1,1393,0.0209
