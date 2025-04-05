@@ -76,10 +76,11 @@ if st.button("⬆️ MP3を作成"):
                 final_audio.export(output_file, format="mp3")
 
                 st.success("会話MP3を作成しました！")
-                with open(output_file, "rb") as f:
-                    st.audio(f.read(), format="audio/mp3")
-                with open(output_file, "rb") as f:
-                    if st.download_button("⬇️ MP3ダウンロード", f, file_name=output_file):
+                if os.path.exists(output_file):
+                    with open(output_file, "rb") as f:
+                        audio_data = f.read()
+                    st.audio(audio_data, format="audio/mp3")
+                    if st.download_button("⬇️ MP3ダウンロード", audio_data, file_name=output_file):
                         # Cleanup MP3 file after download
                         if os.path.exists(output_file):
                             os.remove(output_file)
