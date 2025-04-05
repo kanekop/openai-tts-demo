@@ -147,15 +147,15 @@ if st.button("🎧 音声を生成"):
 
         st.success("✅ MP3ファイルを作成しました！")
 
-            # Initialize output_files for single MP3 mode
-            output_files = [final_output_filename] if speed == 1.0 else [adjusted_output_filename]
+        # Initialize output_files for single MP3 mode
+        output_files = [final_output_filename] if speed == 1.0 else [adjusted_output_filename]
 
-            # Play each audio file
-            for output_path in output_files:
-                with open(output_path, "rb") as f:
-                    st.audio(f.read(), format="audio/mp3")
+        # Play each audio file
+        for output_path in output_files:
+            with open(output_path, "rb") as f:
+                st.audio(f.read(), format="audio/mp3")
 
-            # For multiple MP3 mode, create a zip file
+        # For multiple MP3 mode, create a zip file
         if mode == "複数MP3（1行ごと）" and len(output_files) > 1:
             import zipfile
             import io
