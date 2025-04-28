@@ -79,7 +79,7 @@ if st.button("⬆️ MP3を作成"):
                     final_audio = final_audio + silence
 
                 output_file = f"{file_name}.mp3"
-                final_audio.export(output_file, format="mp3")
+                final_audio.export(output_file, format="mp3", parameters=["-ac", "2"])  # Ensure stereo output
 
                 st.success("会話MP3を作成しました！")
                 if os.path.exists(output_file):

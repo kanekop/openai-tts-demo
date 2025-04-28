@@ -103,6 +103,7 @@ if st.button("🎧 音声を生成"):
                     # Get adjusted audio content
                     output_buffer = io.BytesIO()
                     adjusted_audio.export(output_buffer, format="mp3")
+                    adjusted_audio.export(output_buffer, format="mp3")
                     audio_content = output_buffer.getvalue()
                 
                 # Store final content for playback and download
