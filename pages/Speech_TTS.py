@@ -83,28 +83,29 @@ if st.button("🎧 音声を生成"):
                 )
                 audio_content = response.content
 
+                # Create temporary BytesIO object for audio processing
+                temp_buffer = io.BytesIO()
+                temp_buffer.write(audio_content)
+                temp_buffer.seek(0)
+                
+                # Load audio
+                audio = AudioSegment.from_file(temp_buffer, format="mp3")
+                
+                # Adjust speed if needed
                 if speed != 1.0:
-                    # Create temporary BytesIO object for speed adjustment
-                    temp_buffer = io.BytesIO()
-                    temp_buffer.write(audio_content)
-                    temp_buffer.seek(0)
-                    
-                    # Adjust speed in memory
-                    audio = AudioSegment.from_file(temp_buffer, format="mp3")
-                    adjusted_audio = audio._spawn(audio.raw_data, overrides={
+                    audio = audio._spawn(audio.raw_data, overrides={
                         "frame_rate": int(audio.frame_rate * speed)
                     }).set_frame_rate(audio.frame_rate)
-                    
-                    # Add blank audio if requested
-                    if blank_seconds > 0:
-                        silence = AudioSegment.silent(duration=int(blank_seconds * 1000))
-                        adjusted_audio = adjusted_audio + silence
-                    
-                    # Get adjusted audio content
-                    output_buffer = io.BytesIO()
-                    adjusted_audio.export(output_buffer, format="mp3")
-                    adjusted_audio.export(output_buffer, format="mp3")
-                    audio_content = output_buffer.getvalue()
+                
+                # Add blank audio if requested
+                if blank_seconds > 0:
+                    silence = AudioSegment.silent(duration=int(blank_seconds * 1000))
+                    audio = audio + silence
+                
+                # Get final audio content
+                output_buffer = io.BytesIO()
+                audio.export(output_buffer, format="mp3")
+                audio_content = output_buffer.getvalue()
                 
                 # Store final content for playback and download
                 st.session_state[f"{file_name}_audio"] = audio_content
