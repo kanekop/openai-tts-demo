@@ -24,6 +24,7 @@ voice_a = voice_options[voice_a_label]
 voice_b = voice_options[voice_b_label]
 
 speed = st.slider("再生スピード (1.0 = 通常)", 0.5, 2.0, 1.0, 0.1)
+blank_seconds = st.number_input("末尾の無音時間（秒）", min_value=0.0, max_value=10.0, value=0.0, step=0.5)
 
 conversation_text = st.text_area(
     "📄 A: Hello!\\nB: Hi there!\\nA: How are you? のような形式で話を入力", 
@@ -71,6 +72,11 @@ if st.button("⬆️ MP3を作成"):
                 final_audio = final_audio._spawn(final_audio.raw_data, overrides={
                     "frame_rate": int(final_audio.frame_rate * speed)
                 }).set_frame_rate(final_audio.frame_rate)
+
+                # Add blank audio if requested
+                if blank_seconds > 0:
+                    silence = AudioSegment.silent(duration=int(blank_seconds * 1000))
+                    final_audio = final_audio + silence
 
                 output_file = f"{file_name}.mp3"
                 final_audio.export(output_file, format="mp3")

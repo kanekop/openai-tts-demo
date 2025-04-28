@@ -35,6 +35,7 @@ selected_voice = voice_options[selected_voice_label]
 model = st.sidebar.selectbox("TTSモデルを選んでください", ["tts-1", "tts-1-hd"])
 
 speed = st.sidebar.slider("再生スピード（1.0 = 通常）", 0.5, 2.0, 1.0, 0.1)
+blank_seconds = st.sidebar.number_input("末尾の無音時間（秒）", min_value=0.0, max_value=10.0, value=0.0, step=0.5)
 
 st.title("🎤 Text-to-Speech (TTS) ツール")
 
@@ -93,6 +94,11 @@ if st.button("🎧 音声を生成"):
                     adjusted_audio = audio._spawn(audio.raw_data, overrides={
                         "frame_rate": int(audio.frame_rate * speed)
                     }).set_frame_rate(audio.frame_rate)
+                    
+                    # Add blank audio if requested
+                    if blank_seconds > 0:
+                        silence = AudioSegment.silent(duration=int(blank_seconds * 1000))
+                        adjusted_audio = adjusted_audio + silence
                     
                     # Get adjusted audio content
                     output_buffer = io.BytesIO()
